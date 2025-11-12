@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo & Admin Cloud</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f4f6f8; font-family: 'Segoe UI', sans-serif; }
+        .product-card { border: none; border-radius: 15px; overflow: hidden; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.2s; }
+        .product-card:hover { transform: translateY(-5px); }
+        .product-card img { height: 250px; object-fit: cover; border-bottom: 1px solid #eee; }
+        .id-badge { background-color: #2c3e50; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .btn-whatsapp { background-color: #25D366; color: white; font-weight: 600; border: none; }
+        .btn-whatsapp:hover { background-color: #1da851; color: white; }
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .login-box { background: white; padding: 2rem; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
+        .admin-only { display: none !important; }
+        
+        /* Loader */
+        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 5px; background: transparent; z-index: 10000; }
+        #loader .bar { width: 0%; height: 100%; background: #0d6efd; transition: width 0.3s; }
+    </style>
+</head>
+<body>
+
+<div id="loader"><div class="bar" id="progressBar"></div></div>
+
+<div id="loginOverlay">
+    <div class="login-box shadow-lg">
+        <h2 class="mb-3">☁️ Inventario Nube</h2>
+        <button class="btn btn-outline-primary w-100 mb-3 py-2" onclick="enterAsCustomer()">🛍️ Soy Cliente</button>
+        <hr>
+        <div class="input-group mb-2">
+            <input type="password" id="adminPass" class="form-control" placeholder="Contraseña Admin">
+            <button class="btn btn-dark" onclick="checkAdmin()">Entrar</button>
+        </div>
+        <small class="text-muted">Contraseña: 1234</small>
+    </div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="#">💎 Tienda Online</a>
+        <button class="btn btn-outline-danger btn-sm ms-auto admin-only" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Salir</button>
+    </div>
+</nav>
+
+<div class="container pb-5">
+    <div class="card mb-4 border-0 shadow-sm admin-only bg-warning bg-opacity-10">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-4 text-center"><h6 class="text-muted">VALOR TOTAL</h6><h2 class="fw-bold" id="totalValue">...</h2></div>
+                <div class="col-md-8">
+                    <h5><i class="bi bi-cloud-upload"></i> Nuevo Producto</h5>
+                    <form id="productForm" class="row g-2">
+                        <div class="col-12">
+                            <label class="small text-muted">Usa una URL de imagen (es más rápido) o sube una pequeña:</label>
+                            <div class="input-group">
+                                <input type="text" id="imgUrlInput" class="form-control" placeholder="https://...">
+                                <input type="file" id="imgFileInput" class="form-control" accept="image/*">
+                            </div>
+                        </div>
+                        <div class="col-6"><input type="text" id="newName" class="form-control" placeholder="Nombre" required></div>
+                        <div class="col-3"><input type="number" id="newPrice" class="form-control" placeholder="$ Precio" required></div>
+                        <div class="col-3"><input type="number" id="newStock" class="form-control" placeholder="Stock" required></div>
+                        <div class="col-12"><input type="text" id="newDesc" class="form-control" placeholder="Descripción" required></div>
+                        <div class="col-12"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="newOffer"><label class="form-check-label" for="newOffer">¡Oferta!</label></div></div>
+                        <div class="col-12"><button type="submit" class="btn btn-dark w-100">Guardar en la Nube</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-8">
+            <input type="text" id="searchInput" class="form-control form-control-lg shadow-sm text-center" placeholder="🔍 Buscar producto...">
+        </div>
+    </div>
+
+    <div class="row g-4" id="gallery">
+        <div class="col-12 text-center mt-5"><div class="spinner-border text-secondary" role="status"></div><p class="mt-2 text-muted">Conectando con Google Sheets...</p></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // ==========================================
+    // ⚠️ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT
+    // ==========================================
+    const API_URL = "https://script.google.com/macros/s/AKfycbyfpnEokyZmFEUv9hpfX1vBmOpbsLghT2KJZu7poDfGhtRdLECg3CjWrBUi4HVokpD6nw/exec"; 
+    // Ejemplo: "https://script.google.com/macros/s/AKfycbx.../exec"
+
+    const ADMIN_PASSWORD = "1234";
+    const WHATSAPP_NUM = "5218122133496";
+
+    let products = [];
+    let isAdminMode = false;
+
+    // Elementos
+    const loginOverlay = document.getElementById('loginOverlay');
+    const gallery = document.getElementById('gallery');
+    const progressBar = document.getElementById('progressBar');
+
+    // Inicializar
+    function init() {
+        loadData(); // Cargar datos al inicio
+    }
+
+    // Autenticación
+    function enterAsCustomer() {
+        isAdminMode = false;
+        loginOverlay.style.display = 'none';
+        render();
+    }
+
+    function checkAdmin() {
+        if(document.getElementById('adminPass').value === ADMIN_PASSWORD) {
+            isAdminMode = true;
+            loginOverlay.style.display = 'none';
+            document.querySelectorAll('.admin-only').forEach(el => el.style.setProperty('display', 'block', 'important'));
+            render();
+        } else { alert("Contraseña incorrecta"); }
+    }
+
+    function logout() { location.reload(); }
+
+    // --- CONEXIÓN CON GOOGLE SHEETS ---
+
+    function loading(isLoading) {
+        progressBar.style.width = isLoading ? '70%' : '0%';
+        if(!isLoading) setTimeout(() => progressBar.style.width = '0%', 500);
+    }
+
+    async function loadData() {
+        loading(true);
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            products = data;
+            loading(false);
+            render();
+        } catch (error) {
+            console.error(error);
+            gallery.innerHTML = '<div class="text-center text-danger">Error al cargar datos. Verifica tu conexión.</div>';
+        }
+    }
+
+    async function sendAction(payload) {
+        loading(true);
+        // Usamos 'no-cors' es complicado leer respuesta, asi que asumimos éxito si no falla red
+        // Para leer respuesta necesitamos configuración especial, pero 'POST' simple funciona bien así:
+        await fetch(API_URL, {
+            method: 'POST',
+            mode: 'no-cors', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        // Esperamos un poco y recargamos datos
+        setTimeout(() => {
+            loadData(); 
+            progressBar.style.width = '100%';
+            alert("Operación realizada (Puede tardar unos segundos en reflejarse)");
+        }, 1500);
+    }
+
+    // Guardar Producto
+    document.getElementById('productForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Manejo de imagen
+        let imgFinal = 'https://via.placeholder.com/300?text=Producto';
+        const urlVal = document.getElementById('imgUrlInput').value;
+        const fileVal = document.getElementById('imgFileInput').files[0];
+
+        if(urlVal) {
+            imgFinal = urlVal;
+        } else if (fileVal) {
+            // Convertir a Base64 (Advertencia: Lento en Sheets)
+            imgFinal = await new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(fileVal);
+            });
+        }
+
+        const newProd = {
+            id: Math.floor(10000 + Math.random() * 90000),
+            name: document.getElementById('newName').value,
+            price: parseFloat(document.getElementById('newPrice').value),
+            stock: parseInt(document.getElementById('newStock').value),
+            desc: document.getElementById('newDesc').value,
+            isOffer: document.getElementById('newOffer').checked,
+            img: imgFinal
+        };
+
+        await sendAction({ action: 'ADD', data: newProd });
+        document.getElementById('productForm').reset();
+    });
+
+    // Acciones Admin
+    window.adjustStock = async (id, amount) => {
+        if(confirm("¿Confirmar venta?")) {
+            await sendAction({ action: 'UPDATE_STOCK', id: id, amount: amount });
+        }
+    };
+
+    window.deleteItem = async (id) => {
+        if(confirm("¿Eliminar definitivamente?")) {
+            await sendAction({ action: 'DELETE', id: id });
+        }
+    };
+
+    // Renderizado
+    function render(filterText = '') {
+        gallery.innerHTML = '';
+        let totalVal = 0;
+        const term = filterText.toLowerCase();
+        
+        // Filtros
+        const filtered = products.filter(p => 
+            (p.name && p.name.toLowerCase().includes(term)) || 
+            (p.id && p.id.toString().includes(term))
+        );
+
+        if(filtered.length === 0) {
+            gallery.innerHTML = '<div class="text-center text-muted mt-5">No hay productos encontrados.</div>';
+            return;
+        }
+
+        filtered.forEach(p => {
+            totalVal += (p.price * p.stock);
+            const msg = `Hola, quiero: *${p.name}* (ID: #${p.id}).`;
+            const waLink = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
+
+            let botones = '';
+            if(isAdminMode) {
+                botones = `
+                    <div class="d-flex gap-2 mt-2">
+                        <button class="btn btn-outline-dark btn-sm w-50" onclick="adjustStock(${p.id}, -1)">Vender (-1)</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteItem(${p.id})"><i class="bi bi-trash"></i></button>
+                    </div>
+                    <small class="text-muted d-block mt-1 text-center">Stock: ${p.stock}</small>
+                `;
+            } else {
+                botones = p.stock > 0 
+                    ? `<a href="${waLink}" target="_blank" class="btn btn-whatsapp w-100 mt-2"><i class="bi bi-whatsapp"></i> Pedir</a>`
+                    : `<button class="btn btn-secondary w-100 mt-2" disabled>Agotado</button>`;
+            }
+
+            const card = `
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card product-card h-100">
+                        ${p.isOffer ? '<span class="position-absolute top-0 end-0 bg-danger text-white px-3 py-1 m-2 rounded small fw-bold">¡OFERTA!</span>' : ''}
+                        <img src="${p.img}" class="card-img-top" alt="${p.name}">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between"><span class="id-badge">#${p.id}</span></div>
+                            <h5 class="card-title mt-2 text-truncate">${p.name}</h5>
+                            <p class="small text-muted flex-grow-1">${p.desc}</p>
+                            <div class="mt-auto pt-2 border-top">
+                                <h4 class="fw-bold">$${p.price}</h4>
+                                ${botones}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            gallery.innerHTML += card;
+        });
+
+        document.getElementById('totalValue').innerText = `$${totalVal.toLocaleString()}`;
+    }
+
+    document.getElementById('searchInput').addEventListener('input', (e) => render(e.target.value));
+
+    // Arrancar
+    init();
+</script>
+</body>
+</html>
