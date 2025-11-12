@@ -10,111 +10,77 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
   <style>
-    /* --- ESTILOS GENERALES --- */
+    /* ESTILOS GENERALES */
     body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; padding-bottom: 80px; -webkit-tap-highlight-color: transparent; }
-    
-    /* Navbar */
     .navbar { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
     .navbar-brand { font-weight: 600; color: #333; letter-spacing: 0.5px; font-size: 1.1rem; }
     
-    /* Botón Admin en Header */
-    .btn-admin-header {
-        cursor: pointer;
-        color: #555;
-        font-size: 0.9rem;
-        font-weight: 500;
-        padding: 5px 10px;
-        border-radius: 20px;
-        transition: background 0.2s;
-    }
-    .btn-admin-header:hover {
-        background-color: #f0f0f0;
-        color: #000;
-    }
+    .btn-admin-header { cursor: pointer; color: #555; font-size: 0.9rem; font-weight: 500; padding: 5px 12px; border-radius: 20px; transition: all 0.2s; background: #f1f1f1; }
+    .btn-admin-header:hover { background-color: #e2e2e2; color: #000; }
 
-    /* Tarjetas de Producto */
-    .product-card { 
-      border: none; border-radius: 15px; background: white; 
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; 
-      position: relative; overflow: hidden; cursor: pointer; transition: transform 0.2s;
-    }
+    /* TARJETAS */
+    .product-card { border: none; border-radius: 15px; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; position: relative; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
     .product-card:active { transform: scale(0.98); }
     .card-img-top { height: 180px; object-fit: cover; width: 100%; background-color: #eee; }
     .card-body { padding: 12px 15px; }
     .card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #333; }
     .price-tag { color: #2c3e50; font-weight: 700; font-size: 1.1rem; }
-    
-    /* Etiquetas (Nuevo / Oferta) */
     .badge-float { position: absolute; top: 10px; padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; color: white; z-index: 2; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
     .bg-new { left: 10px; background: #212529; }
     .bg-offer { right: 10px; background: #e74c3c; }
-
-    /* Títulos de Sección */
     .section-header { font-weight: 600; font-size: 1rem; margin: 25px 0 15px 0; display: flex; align-items: center; text-transform: uppercase; letter-spacing: 1px; color: #555; }
-    .section-header i { margin-right: 8px; }
 
-    /* --- ADMIN PANEL --- */
-    #admin-panel { 
-        display: none; 
-        background: #fff; 
-        position: fixed; 
-        top: 0; 
-        left: 0; 
-        width: 100%; 
-        height: 100vh; 
-        z-index: 2000; 
-        overflow-y: auto; 
-        -webkit-overflow-scrolling: touch; 
-        padding-bottom: 100px; 
-    }
+    /* ADMIN PANEL */
+    #admin-panel { display: none; background: #fff; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 2000; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 120px; }
     .admin-header { background: #2c3e50; color: white; padding: 15px 20px; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     
-    /* Loaders */
+    /* BOTONES ACCION */
+    .btn-action { width: 36px; height: 36px; padding: 0; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; margin-left: 4px; border: none; transition: transform 0.1s;}
+    .btn-action:active { transform: scale(0.9); }
+
+    /* OPCIONES SELECCIONABLES (NUEVO) */
+    .option-btn {
+        border: 1px solid #ddd;
+        background: white;
+        color: #333;
+        padding: 8px 15px;
+        border-radius: 8px;
+        margin: 3px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .option-btn:hover { background: #f8f9fa; }
+    .option-btn.selected {
+        background: #2c3e50;
+        color: white;
+        border-color: #2c3e50;
+        font-weight: 600;
+    }
+
+    /* LOADERS */
     #loader { position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:9999; display:flex; justify-content:center; align-items:center; flex-direction: column; }
     #upload-loader { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; flex-direction:column; justify-content:center; align-items:center; color:white; text-align: center;}
   </style>
 </head>
 <body>
 
-<div id="loader">
-  <div class="spinner-border text-dark" role="status"></div>
-  <p class="mt-2 text-muted small" id="loading-text">Cargando catálogo...</p>
-</div>
-
-<div id="upload-loader">
-    <div class="spinner-border text-light mb-3" style="width: 3rem; height: 3rem;"></div>
-    <h5 class="fw-light">Subiendo foto...</h5>
-    <small class="text-white-50">Espera un momento</small>
-</div>
+<div id="loader"><div class="spinner-border text-dark" role="status"></div><p class="mt-2 text-muted small">Cargando...</p></div>
+<div id="upload-loader"><div class="spinner-border text-light mb-3"></div><h5 class="fw-light" id="loader-msg">Procesando...</h5></div>
 
 <div id="client-view">
-  
   <nav class="navbar sticky-top">
     <div class="container-fluid d-flex justify-content-between align-items-center">
-      
       <span class="navbar-brand mb-0"><i class="fa-solid fa-bag-shopping me-2"></i>MI BOUTIQUE</span>
-      
-      <div class="btn-admin-header" onclick="abrirLogin()">
-          <i class="fa-solid fa-lock me-1"></i> Admin
-      </div>
-
+      <div class="btn-admin-header" onclick="abrirLogin()"><i class="fa-solid fa-lock me-1"></i> Admin</div>
     </div>
   </nav>
 
   <div class="container">
+    <div id="section-new" style="display:none;"><div class="section-header text-dark"><i class="fa-solid fa-star text-warning"></i> Lo Nuevo</div><div class="row" id="container-new"></div></div>
+    <div id="section-offers" style="display:none;"><div class="section-header text-danger"><i class="fa-solid fa-fire"></i> Ofertas Flash</div><div class="row" id="container-offers"></div></div>
     
-    <div id="section-new" style="display:none;">
-        <div class="section-header text-dark"><i class="fa-solid fa-star text-warning"></i> Lo Nuevo</div>
-        <div class="row" id="container-new"></div>
-    </div>
-
-    <div id="section-offers" style="display:none;">
-        <div class="section-header text-danger"><i class="fa-solid fa-fire"></i> Ofertas Flash</div>
-        <div class="row" id="container-offers"></div>
-    </div>
-
     <div class="section-header"><i class="fa-solid fa-layer-group"></i> Colección</div>
-    
     <div class="d-flex overflow-auto mb-4 pb-2" style="white-space: nowrap;">
       <button class="btn btn-dark btn-sm me-2 rounded-pill px-3" onclick="filtrar('Todo')">Todo</button>
       <button class="btn btn-outline-dark btn-sm me-2 rounded-pill px-3" onclick="filtrar('Ropa')">Ropa</button>
@@ -123,13 +89,8 @@
       <button class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="filtrar('Bolsos')">Bolsos</button>
     </div>
 
-    <div class="row" id="container-all">
-        </div>
-
-    <div class="text-center mt-5 pt-4 border-top">
-      <small class="text-muted d-block mb-2">Gracias por tu preferencia</small>
-    </div>
-
+    <div class="row" id="container-all"></div>
+    <div class="text-center mt-5 pt-4 border-top"><small class="text-muted d-block mb-2">Gracias por tu preferencia</small></div>
   </div>
 </div>
 
@@ -141,51 +102,40 @@
 
     <div class="container mt-3">
         <ul class="nav nav-pills nav-fill mb-4 bg-light p-1 rounded" id="pills-tab">
-            <li class="nav-item"><button class="nav-link active rounded" data-bs-toggle="pill" data-bs-target="#pills-alta">Nuevo</button></li>
+            <li class="nav-item"><button class="nav-link active rounded" data-bs-toggle="pill" data-bs-target="#pills-alta" onclick="limpiarFormulario()">Nuevo</button></li>
             <li class="nav-item"><button class="nav-link rounded" data-bs-toggle="pill" data-bs-target="#pills-inv" onclick="cargarInventarioTabla()">Inventario</button></li>
-            <li class="nav-item"><button class="nav-link rounded" data-bs-toggle="pill" data-bs-target="#pills-apart">Apartados</button></li>
+            <li class="nav-item"><button class="nav-link rounded" data-bs-toggle="pill" data-bs-target="#pills-apart" onclick="cargarApartados()">Apartados</button></li>
         </ul>
 
         <div class="tab-content">
             <div class="tab-pane fade show active" id="pills-alta">
                 <form id="formProducto" onsubmit="event.preventDefault(); procesarEnvio();">
+                    <input type="hidden" id="inputId"><input type="hidden" id="inputFotoUrl">
                     
                     <div class="card border-0 shadow-sm mb-3 p-3">
-                        <label class="fw-bold mb-2 text-primary">1. Foto del Producto</label>
-                        <div class="d-grid gap-2">
-                             <label class="btn btn-outline-secondary btn-sm text-start">
-                                <i class="fa-regular fa-image me-2"></i> Subir desde Galería
-                                <input type="file" id="inputFotoArchivo" accept="image/*" hidden>
-                             </label>
-                        </div>
-                        <div class="text-center mt-2 position-relative" id="previewContainer" style="display:none;">
-                            <img id="previewImg" src="" class="img-fluid rounded border" style="max-height: 200px; object-fit: contain;">
-                            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle" onclick="limpiarFoto()" style="width: 30px; height: 30px; padding: 0;">&times;</button>
-                        </div>
+                        <label class="fw-bold mb-2 text-primary">1. Foto</label>
+                        <div class="d-grid gap-2"><label class="btn btn-outline-secondary btn-sm text-start"><i class="fa-regular fa-image me-2"></i> Subir desde Galería<input type="file" id="inputFotoArchivo" accept="image/*" hidden></label></div>
+                        <div class="text-center mt-2 position-relative" id="previewContainer" style="display:none;"><img id="previewImg" src="" class="img-fluid rounded border" style="max-height: 200px;"><button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle" onclick="limpiarFoto()" style="width:30px;height:30px;padding:0;">×</button></div>
                     </div>
 
                     <div class="card border-0 shadow-sm mb-3 p-3">
-                        <label class="fw-bold mb-2 text-primary">2. Detalles Principales</label>
-                        <div class="form-floating mb-2">
-                            <input type="text" class="form-control" id="inputNombre" placeholder="Nombre" required>
-                            <label>Nombre del Producto</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <textarea class="form-control" id="inputDesc" placeholder="Desc" style="height: 80px"></textarea>
-                            <label>Descripción (Opcional)</label>
-                        </div>
+                        <label class="fw-bold mb-2 text-primary">2. Detalles</label>
+                        <div class="form-floating mb-2"><input type="text" class="form-control" id="inputNombre" placeholder="Nombre" required><label>Nombre del Producto</label></div>
+                        <div class="form-floating mb-3"><textarea class="form-control" id="inputDesc" placeholder="Desc" style="height:80px"></textarea><label>Descripción</label></div>
+                        
                         <div class="row g-2">
                             <div class="col-4">
                                 <div class="form-floating">
                                     <input type="number" class="form-control" id="inputCantidad" value="1" placeholder="Cant">
-                                    <label>Cant.</label>
+                                    <label>Total Piezas</label>
                                 </div>
                             </div>
                             <div class="col-8">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="inputColores" placeholder="Colores">
-                                    <label>Colores/Tallas</label>
+                                    <input type="text" class="form-control" id="inputColores" placeholder="Ej: Rojo 26, Azul 27">
+                                    <label>Variantes (Separa con comas)</label>
                                 </div>
+                                <small class="text-muted" style="font-size:0.7rem;">Ej: <i>Negro 26, Negro 27, Gris 25</i></small>
                             </div>
                         </div>
                     </div>
@@ -193,65 +143,26 @@
                     <div class="card border-0 shadow-sm mb-3 p-3">
                          <label class="fw-bold mb-2 text-primary">3. Venta</label>
                          <div class="row g-2 mb-3">
-                             <div class="col-6">
-                                 <div class="form-floating">
-                                    <input type="number" class="form-control fw-bold" id="inputPrecio" placeholder="$" required>
-                                    <label>Precio ($)</label>
-                                 </div>
-                             </div>
-                             <div class="col-6">
-                                 <div class="form-floating">
-                                     <select class="form-select" id="inputCategoria">
-                                        <option value="Ropa">Ropa</option>
-                                        <option value="Accesorios">Accesorios</option>
-                                        <option value="Calzado">Calzado</option>
-                                        <option value="Bolsos">Bolsos</option>
-                                    </select>
-                                    <label>Categoría</label>
-                                 </div>
-                             </div>
+                             <div class="col-6"><div class="form-floating"><input type="number" class="form-control fw-bold" id="inputPrecio" placeholder="$" required><label>Precio ($)</label></div></div>
+                             <div class="col-6"><div class="form-floating"><select class="form-select" id="inputCategoria"><option value="Ropa">Ropa</option><option value="Accesorios">Accesorios</option><option value="Calzado">Calzado</option><option value="Bolsos">Bolsos</option></select><label>Categoría</label></div></div>
                          </div>
-                         <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded mb-2">
-                             <label class="form-check-label" for="checkUnico">¿Es Pieza Única?</label>
-                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="checkUnico" onchange="toggleCantidad()">
-                             </div>
-                         </div>
-                         <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded">
-                             <label class="form-check-label text-danger fw-bold" for="checkOferta">¡Es Oferta!</label>
-                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="checkOferta">
-                             </div>
-                         </div>
+                         <div class="d-flex justify-content-between bg-light p-2 rounded mb-2"><label class="form-check-label" for="checkUnico">¿Pieza Única?</label><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="checkUnico" onchange="toggleCantidad()"></div></div>
+                         <div class="d-flex justify-content-between bg-light p-2 rounded"><label class="form-check-label text-danger fw-bold">¡Es Oferta!</label><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="checkOferta"></div></div>
                     </div>
 
-                    <div class="text-center mb-3">
-                        <button type="button" class="btn btn-link text-decoration-none btn-sm text-muted" onclick="$('#detallesExtra').slideToggle()">
-                            <i class="fa-solid fa-sliders me-1"></i> Costo y Ubicación (Opcional)
-                        </button>
-                    </div>
-                    <div id="detallesExtra" style="display:none;" class="mb-4 card p-3 border-0 shadow-sm bg-light">
-                        <div class="row g-2">
-                            <div class="col-6"><input type="number" class="form-control form-control-sm" id="inputCosto" placeholder="$ Costo Compra"></div>
-                            <div class="col-6"><input type="text" class="form-control form-control-sm" id="inputUbicacion" placeholder="Ubicación (Bodega)"></div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-dark w-100 py-3 rounded-pill shadow fw-bold mb-5">
-                        <i class="fa-solid fa-cloud-arrow-up me-2"></i> GUARDAR PRODUCTO
-                    </button>
+                    <div class="text-center mb-3"><button type="button" class="btn btn-link text-decoration-none btn-sm text-muted" onclick="$('#detallesExtra').slideToggle()">+ Costo y Ubicación</button></div>
+                    <div id="detallesExtra" style="display:none;" class="mb-4 card p-3 border-0 shadow-sm bg-light"><div class="row g-2"><div class="col-6"><input type="number" class="form-control form-control-sm" id="inputCosto" placeholder="Costo"></div><div class="col-6"><input type="text" class="form-control form-control-sm" id="inputUbicacion" placeholder="Ubicación"></div></div></div>
+                    
+                    <button type="submit" class="btn btn-dark w-100 py-3 rounded-pill shadow fw-bold mb-5" id="btnGuardar">GUARDAR PRODUCTO</button>
                 </form>
             </div>
 
             <div class="tab-pane fade" id="pills-inv">
-                <div class="input-group mb-3 shadow-sm">
-                    <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-search text-muted"></i></span>
-                    <input type="text" class="form-control border-start-0" placeholder="Buscar producto..." id="buscadorInv" onkeyup="filtrarTabla()">
-                </div>
+                <div class="input-group mb-3 shadow-sm"><span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-search text-muted"></i></span><input type="text" class="form-control border-start-0" placeholder="Buscar..." id="buscadorInv" onkeyup="filtrarTabla()"></div>
                 <div class="card border-0 shadow-sm overflow-hidden">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0 small align-middle" id="tablaInventario">
-                            <thead class="table-light"><tr><th>Prod</th><th class="text-center">Stock</th><th>Estado</th></tr></thead>
+                            <thead class="table-light"><tr><th>Producto</th><th class="text-center">Stock</th><th class="text-end" style="min-width:120px;">Acciones</th></tr></thead>
                             <tbody></tbody>
                         </table>
                     </div>
@@ -259,83 +170,87 @@
             </div>
 
             <div class="tab-pane fade" id="pills-apart">
-                <div class="text-center mt-5 text-muted">
-                    <i class="fa-solid fa-box-open fa-3x mb-3 opacity-25"></i>
-                    <p>Gestión de apartados (Próximamente)</p>
+                <div class="card border-0 shadow-sm overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 small align-middle" id="tablaApartados">
+                            <thead class="table-light"><tr><th>Detalle Apartado</th><th class="text-end">Acción</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
+                <div id="emptyApartados" class="text-center mt-5 text-muted" style="display:none;"><i class="fa-solid fa-box-open fa-3x mb-3 opacity-25"></i><p>No hay apartados.</p></div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="modalLogin" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content border-0 shadow"><div class="modal-body text-center p-4"><div class="mb-3 text-secondary"><i class="fa-solid fa-user-shield fa-2x"></i></div><h6 class="mb-3">Acceso Administrativo</h6><input type="password" id="inputPass" class="form-control text-center mb-3" placeholder="••••"><button class="btn btn-dark w-100 rounded-pill" onclick="login()">Entrar</button></div></div></div></div>
+<div class="modal fade" id="modalLogin" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-sm"><div class="modal-content border-0 shadow"><div class="modal-body text-center p-4"><div class="mb-3 text-secondary"><i class="fa-solid fa-user-shield fa-2x"></i></div><h6 class="mb-3">Acceso Admin</h6><input type="password" id="inputPass" class="form-control text-center mb-3" placeholder="••••"><button class="btn btn-dark w-100 rounded-pill" onclick="login()">Entrar</button></div></div></div></div>
 
-<div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg">
-      
-      <button type="button" class="btn-close position-absolute top-0 end-0 m-3 z-3" data-bs-dismiss="modal"></button>
-
-      <div class="modal-body text-center p-4 position-relative">
-        
-        <span class="badge bg-light text-secondary border position-absolute top-0 start-0 m-3" id="modalID" style="font-size: 0.7rem;">
-           Folio: --
-        </span>
-
-        <img id="modalImg" src="" class="img-fluid rounded mb-3 mt-4" style="max-height:350px; width:100%; object-fit:contain;">
-        
-        <h3 id="modalTitulo" class="fw-bold mb-2 text-dark"></h3>
-        
-        <div class="mb-3">
-            <p id="modalDesc" class="text-secondary small mb-0"></p>
-        </div>
-
-        <div id="modalColores" class="mb-3"></div>
-        
-        <h2 id="modalPrecio" class="text-primary fw-bold mb-4 display-6"></h2>
-        
-        <a id="btnWhatsapp" href="#" target="_blank" class="btn btn-success w-100 rounded-pill py-3 fw-bold shadow-sm text-uppercase">
-            <i class="fa-brands fa-whatsapp me-2 fa-lg"></i> Pedir por WhatsApp
-        </a>
-
-      </div>
+<div class="modal fade" id="modalProducto" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content border-0 shadow-lg"><button type="button" class="btn-close position-absolute top-0 end-0 m-3 z-3" data-bs-dismiss="modal"></button><div class="modal-body text-center p-4 position-relative">
+    <span class="badge bg-light text-secondary border position-absolute top-0 start-0 m-3" id="modalID" style="font-size:0.7rem;">Folio: --</span>
+    <img id="modalImg" src="" class="img-fluid rounded mb-3 mt-4" style="max-height:350px; width:100%; object-fit:contain;">
+    <h3 id="modalTitulo" class="fw-bold mb-2 text-dark"></h3>
+    <p id="modalDesc" class="text-secondary small mb-3"></p>
+    
+    <div class="text-start mb-3">
+        <label class="small text-muted fw-bold mb-2 d-block">ELIGE UNA OPCIÓN:</label>
+        <div id="modalOptionsContainer" class="d-flex flex-wrap justify-content-center gap-2">
+            </div>
+        <div id="selectionError" class="text-danger small mt-2 text-center" style="display:none;">* Por favor selecciona una opción</div>
     </div>
-  </div>
-</div>
+
+    <h2 id="modalPrecio" class="text-primary fw-bold mb-4 display-6"></h2>
+    
+    <a onclick="enviarWhatsApp()" class="btn btn-success w-100 rounded-pill py-3 fw-bold shadow-sm text-uppercase text-white" style="cursor:pointer;">
+        <i class="fa-brands fa-whatsapp me-2 fa-lg"></i> Pedir por WhatsApp
+    </a>
+
+</div></div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@latest/dist/browser-image-compression.js"></script>
 
 <script>
-  // ⚠️ TU URL DE APPS SCRIPT
-  const API_URL = "https://script.google.com/macros/s/AKfycbw7LexMJGJQmz3wVSxGVJIfvr6DV0BRHz8kgLqq1Bs2Yjgrn1qm7Wz1AEX_YYMuENTlWg/exec"; 
+  // ⚠️ URL DE TU APPS SCRIPT
+  const API_URL = "https://script.google.com/macros/s/AKfycbxk05YVRrCVAqm9u5uHTx9_JBfN48FtUhwKF-bXzMF7-wxtFAZCNC4kgVU_HccJgj_uQA/exec"; 
+
+  let catalogoCache = [];
+  let opcionSeleccionada = ""; // Para guardar la talla elegida
 
   $(document).ready(function(){ fetchCatalog(); });
 
-  // --- PREVIEW FOTO ---
+  // --- FOTO & ENVIO ---
   const inputFoto = document.getElementById('inputFotoArchivo');
-  inputFoto.addEventListener('change', function() {
-      if (this.files && this.files[0]) {
-          const reader = new FileReader();
-          reader.onload = function(e) { $('#previewImg').attr('src', e.target.result); $('#previewContainer').fadeIn(); }
-          reader.readAsDataURL(this.files[0]);
-      }
-  });
-  function limpiarFoto() { inputFoto.value = ''; $('#previewContainer').hide(); $('#previewImg').attr('src', ''); }
+  inputFoto.addEventListener('change', function() { if (this.files && this.files[0]) { const reader = new FileReader(); reader.onload = function(e) { $('#previewImg').attr('src', e.target.result); $('#previewContainer').fadeIn(); }; reader.readAsDataURL(this.files[0]); } });
+  function limpiarFoto() { inputFoto.value = ''; $('#previewContainer').hide(); $('#previewImg').attr('src', ''); $('#inputFotoUrl').val(''); }
 
-  // --- GUARDAR PRODUCTO ---
-  function procesarEnvio() {
-      $('#upload-loader').css('display', 'flex');
-      if (inputFoto.files.length > 0) {
-          const reader = new FileReader();
-          reader.onloadend = function() { enviarDatos(reader.result); };
-          reader.readAsDataURL(inputFoto.files[0]);
-      } else { enviarDatos(""); }
+  async function procesarEnvio() {
+      $('#upload-loader').css('display', 'flex'); $('#loader-msg').text('Procesando...');
+      let base64Img = "";
+      if (inputFoto.files && inputFoto.files[0]) {
+          try {
+            const options = { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true, initialQuality: 0.8 };
+            const compressedFile = await imageCompression(inputFoto.files[0], options);
+            const reader = new FileReader();
+            reader.onloadend = function() { enviarDatos(reader.result); };
+            reader.readAsDataURL(compressedFile);
+          } catch (error) {
+             const reader = new FileReader();
+             reader.onloadend = function() { enviarDatos(reader.result); };
+             reader.readAsDataURL(inputFoto.files[0]);
+          }
+      } else {
+          base64Img = $('#inputFotoUrl').val() || "";
+          enviarDatos(base64Img);
+      }
   }
 
-  function enviarDatos(base64Img) {
+  function enviarDatos(imgData) {
+      $('#loader-msg').text('Guardando...');
       const payload = {
           action: "saveProduct",
+          id: $('#inputId').val(),
           nombre: $('#inputNombre').val(),
           descripcion: $('#inputDesc').val(),
           precio: $('#inputPrecio').val(),
@@ -346,134 +261,157 @@
           ubicacion: $('#inputUbicacion').val(),
           esUnico: $('#checkUnico').is(':checked').toString(),
           esOferta: $('#checkOferta').is(':checked').toString(),
-          imagen: base64Img
+          imagen: imgData
       };
-
-      fetch(API_URL, { method: "POST", body: JSON.stringify(payload) })
-      .then(r => r.json())
-      .then(data => {
+      fetch(API_URL, { method: "POST", body: JSON.stringify(payload) }).then(r => r.json()).then(data => {
           $('#upload-loader').fadeOut();
-          if(data.success) {
-              alert("¡Guardado!");
-              document.getElementById('formProducto').reset();
-              limpiarFoto();
-              $('#inputCantidad').prop('disabled', false);
-              fetchCatalog();
-          } else { alert("Error: " + data.message); }
-      })
-      .catch(e => { $('#upload-loader').fadeOut(); alert("Enviado. Verifica en unos segundos."); fetchCatalog(); });
+          if(data.success) { alert("¡Guardado!"); limpiarFormulario(); fetchCatalog(); cargarInventarioTabla(); } 
+          else { alert("Error: " + data.message); }
+      }).catch(e => { $('#upload-loader').fadeOut(); alert("Enviado."); fetchCatalog(); });
   }
 
-  // --- CATALOGO ---
-  function fetchCatalog() {
-      $('#loading-text').text("Cargando catálogo...");
-      fetch(API_URL + "?action=getCatalog")
-      .then(res => res.json())
-      .then(data => {
-          if (Array.isArray(data)) {
-             renderProducts(data);
-          } else {
-             console.error("Error en datos:", data);
-             if(data.error) alert("Error del sistema: " + data.error);
-          }
-          $('#loader').fadeOut();
-      })
-      .catch(e => { 
-          console.error(e); 
-          $('#loading-text').text("Error de conexión.");
-          alert("Error conectando con la base de datos."); 
-      });
+  // --- EDICION ---
+  function cargarProductoParaEditar(id) {
+      const p = catalogoCache.find(item => item.id === id);
+      if(!p) { alert("Producto no activo en catálogo (quizás agotado). Solo puedes resurtir."); return; }
+      $('#inputId').val(p.id); $('#inputNombre').val(p.nombre); $('#inputDesc').val(p.desc); $('#inputPrecio').val(p.precio); $('#inputCantidad').val(p.stock); $('#inputColores').val(p.colores); $('#inputCategoria').val(p.cat); $('#inputFotoUrl').val(p.img);
+      if(p.img){ $('#previewImg').attr('src', p.img); $('#previewContainer').show(); }
+      if(p.oferta) $('#checkOferta').prop('checked', true);
+      if(p.unico) { $('#checkUnico').prop('checked', true); toggleCantidad(); }
+      const triggerEl = document.querySelector('#pills-tab button[data-bs-target="#pills-alta"]'); bootstrap.Tab.getInstance(triggerEl).show();
+      $('#btnGuardar').text("ACTUALIZAR PRODUCTO");
   }
+  function limpiarFormulario(){ document.getElementById('formProducto').reset(); limpiarFoto(); $('#inputId').val(''); $('#inputFotoUrl').val(''); $('#btnGuardar').text("GUARDAR PRODUCTO"); $('#inputCantidad').prop('disabled', false); }
 
-  function renderProducts(productos) {
-      let htmlNew = '', htmlOffer = '', htmlAll = '';
-      if(productos.length === 0) {
-          $('#container-all').html('<p class="text-center text-muted w-100">No hay productos disponibles aún.</p>');
-          return;
-      }
-
-      productos.forEach((p, i) => {
-          let badge = '';
-          if(p.oferta) badge = '<span class="badge-float bg-offer">OFERTA</span>';
-          else if(i < 5) badge = '<span class="badge-float bg-new">NUEVO</span>';
-
-          let card = `
-             <div class="col-6 col-md-4 col-lg-3 item-producto mb-3" data-cat="${p.cat}">
-                <div class="product-card h-100" onclick='openProduct(${JSON.stringify(p)})'>
-                    ${badge}
-                    <img src="${p.img && p.img.length > 10 ? p.img : 'https://via.placeholder.com/300x300?text=Sin+Foto'}" class="card-img-top">
-                    <div class="card-body">
-                        <div class="card-title">${p.nombre}</div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="price-tag">$${p.precio}</div>
-                            <small class="text-muted" style="font-size:0.7rem">${p.cat}</small>
-                        </div>
-                    </div>
-                </div>
-             </div>`;
-          htmlAll += card;
-          if(i < 5) htmlNew += card;
-          if(p.oferta) htmlOffer += card;
-      });
-
-      $('#container-all').html(htmlAll);
-      if(htmlNew) { $('#container-new').html(htmlNew); $('#section-new').show(); }
-      if(htmlOffer) { $('#container-offers').html(htmlOffer); $('#section-offers').show(); }
-  }
-
-  // --- ABRIR MODAL DETALLE ---
-  function openProduct(p) {
-      $('#modalID').text('Folio: ' + p.id);
-      $('#modalImg').attr('src', p.img || 'https://via.placeholder.com/300');
-      $('#modalTitulo').text(p.nombre);
-      $('#modalPrecio').text('$' + p.precio);
-      $('#modalDesc').text(p.desc || 'Sin descripción detallada.');
-
-      let h = ''; 
-      if(p.colores) {
-          p.colores.split(',').forEach(c => h += `<span class="badge bg-light text-dark border me-1">${c}</span>`);
-      }
-      $('#modalColores').html(h);
-
-      let telefono = "5218122133496"; 
-      let mensaje = `Hola, me interesa este producto: *${p.nombre}* (Folio: ${p.id}). Precio: $${p.precio}. ¿Está disponible?`;
-      let urlWhatsApp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
-      
-      $('#btnWhatsapp').attr('href', urlWhatsApp);
-      $('#modalProducto').modal('show');
-  }
-
-  function filtrar(cat) { cat==='Todo' ? $('.item-producto').fadeIn() : ($('.item-producto').hide(), $('.item-producto[data-cat="'+cat+'"]').fadeIn()); }
-  function toggleCantidad() { $('#checkUnico').is(':checked') ? $('#inputCantidad').val('1').prop('disabled', true) : $('#inputCantidad').prop('disabled', false); }
-
-  // --- ADMIN ---
-  function abrirLogin() { $('#modalLogin').modal('show'); }
-  function salirAdmin() { $('#admin-panel').fadeOut(); $('#client-view').fadeIn(); }
-  function login() {
-      const pass = $('#inputPass').val();
-      fetch(API_URL + "?action=login&pass=" + pass).then(r=>r.json()).then(d=>{
-          if(d.authorized) { $('#modalLogin').modal('hide'); $('#client-view').hide(); $('#admin-panel').fadeIn(); $('#inputPass').val(''); }
-          else { alert("Contraseña incorrecta"); $('#inputPass').val(''); }
-      });
-  }
+  // --- INVENTARIO ---
   function cargarInventarioTabla() {
       $('#tablaInventario tbody').html('<tr><td colspan="3" class="text-center py-3">Cargando...</td></tr>');
       fetch(API_URL + "?action=getInventory").then(r=>r.json()).then(data => {
           if(Array.isArray(data)){
               let html = '';
               data.forEach(item => {
-                  let badge = item.estado==='Activo'?'<span class="badge bg-success bg-opacity-10 text-success">Activo</span>':'<span class="badge bg-danger bg-opacity-10 text-danger">Agotado</span>';
-                  html += `<tr><td><span class="fw-bold d-block text-dark">${item.nombre}</span><span class="text-muted small">${item.id}</span></td><td class="text-center fw-bold">${item.stock}</td><td>${badge}</td></tr>`;
+                  let color = item.estado==='Activo'?'text-success':'text-danger';
+                  let botones = '';
+                  if(item.estado === 'Agotado') {
+                      botones = `<div class="text-end"><button class="btn btn-primary btn-action text-white shadow-sm" onclick="resurtir('${item.id}')" title="Resurtir"><i class="fa-solid fa-plus"></i></button></div>`;
+                  } else if (item.estado === 'Apartado') {
+                      botones = `<div class="text-end"><small class="text-warning me-2">Apartado</small></div>`;
+                  } else {
+                      botones = `<div class="text-end"><button class="btn btn-success btn-action text-white shadow-sm" onclick="cambiarEstado('${item.id}', 'VENTA')" title="Vender"><i class="fa-solid fa-dollar-sign"></i></button><button class="btn btn-warning btn-action text-white shadow-sm" onclick="cambiarEstado('${item.id}', 'APARTAR')" title="Apartar"><i class="fa-solid fa-box-archive"></i></button><button class="btn btn-info btn-action text-white shadow-sm" onclick="cargarProductoParaEditar('${item.id}')" title="Editar"><i class="fa-solid fa-pen"></i></button></div>`;
+                  }
+                  html += `<tr><td><span class="fw-bold d-block text-dark">${item.nombre}</span><span class="text-muted small">${item.id} - <span class="${color}">${item.estado}</span></span></td><td class="text-center fw-bold">${item.stock}</td><td>${botones}</td></tr>`;
               });
               $('#tablaInventario tbody').html(html);
           }
       });
   }
-  function filtrarTabla() {
-      let v = $('#buscadorInv').val().toLowerCase();
-      $("#tablaInventario tbody tr").filter(function() { $(this).toggle($(this).text().toLowerCase().indexOf(v) > -1) });
+  function cargarApartados() {
+      $('#tablaApartados tbody').html('<tr><td colspan="2" class="text-center py-3">Cargando...</td></tr>');
+      fetch(API_URL + "?action=getApartados").then(r=>r.json()).then(data => {
+          if(Array.isArray(data) && data.length > 0){
+              $('#emptyApartados').hide();
+              let html = '';
+              data.forEach(item => {
+                  html += `<tr><td><span class="fw-bold d-block text-dark">${item.nombre}</span><span class="text-muted small">Cliente: ${item.cliente} (${item.cantidad}pz)</span></td><td class="text-end"><button class="btn btn-danger btn-action text-white shadow-sm" onclick="cambiarEstado('${item.idApartado}', 'LIBERAR')" title="Liberar"><i class="fa-solid fa-rotate-left"></i></button></td></tr>`;
+              });
+              $('#tablaApartados tbody').html(html);
+          } else { $('#tablaApartados tbody').html(''); $('#emptyApartados').show(); }
+      });
   }
+  function cambiarEstado(id, tipo) {
+      let cantidad = 0; let cliente = "";
+      if (tipo === "VENTA") { if(!confirm("¿Registrar venta de 1 pieza?")) return; }
+      else if (tipo === "APARTAR") { cantidad = prompt("¿Cuántas piezas?", "1"); if(!cantidad) return; cliente = prompt("Nombre cliente:"); if(!cliente) return; }
+      else if (tipo === "LIBERAR") { if(!confirm("¿Liberar apartado?")) return; }
+      ejecutarMovimiento(id, tipo, cantidad, cliente);
+  }
+  function resurtir(id) { let cant = prompt("¿Cuántas piezas llegaron?"); if(cant && parseInt(cant) > 0) ejecutarMovimiento(id, "RESURTIR", cant, ""); }
+  function ejecutarMovimiento(id, tipo, cantidad = 0, cliente = "") {
+      $('#upload-loader').css('display', 'flex'); $('#loader-msg').text('Actualizando...');
+      const payload = { action: "updateStatus", id: id, tipo: tipo, cantidad: cantidad, cliente: cliente };
+      if(tipo === "LIBERAR") payload.idApartado = id;
+      fetch(API_URL, { method: "POST", body: JSON.stringify(payload) }).then(r => r.json()).then(data => {
+          $('#upload-loader').fadeOut(); alert(data.message); cargarInventarioTabla(); cargarApartados(); fetchCatalog();
+      });
+  }
+
+  // --- CATALOGO ---
+  function fetchCatalog() { fetch(API_URL + "?action=getCatalog").then(r=>r.json()).then(data => { if (Array.isArray(data)) { catalogoCache = data; renderProducts(data); } $('#loader').fadeOut(); }); }
+  function renderProducts(productos) {
+      let hN='', hO='', hA='';
+      if(productos.length===0){$('#container-all').html('<p class="text-center text-muted w-100">Sin productos.</p>');return;}
+      productos.forEach((p, i) => {
+          let badge = p.oferta ? '<span class="badge-float bg-offer">OFERTA</span>' : (i<5 ? '<span class="badge-float bg-new">NUEVO</span>' : '');
+          let card = `<div class="col-6 col-md-4 col-lg-3 item-producto mb-3" data-cat="${p.cat}"><div class="product-card h-100" onclick='openProduct(${JSON.stringify(p)})'>${badge}<img src="${p.img && p.img.length > 10 ? p.img : 'https://via.placeholder.com/300x300?text=Sin+Foto'}" class="card-img-top"><div class="card-body"><div class="card-title">${p.nombre}</div><div class="d-flex justify-content-between align-items-center"><div class="price-tag">$${p.precio}</div><small class="text-muted" style="font-size:0.7rem">${p.cat}</small></div></div></div></div>`;
+          hA+=card; if(i<5)hN+=card; if(p.oferta)hO+=card;
+      });
+      $('#container-all').html(hA);
+      if(hN){$('#container-new').html(hN);$('#section-new').show();}
+      if(hO){$('#container-offers').html(hO);$('#section-offers').show();}
+  }
+
+  // --- MODAL DETALLE INTELIGENTE ---
+  function openProduct(p) {
+      opcionSeleccionada = ""; // Reiniciar selección
+      $('#selectionError').hide();
+      $('#modalID').text('Folio: ' + p.id); 
+      $('#modalImg').attr('src', p.img || 'https://via.placeholder.com/300'); 
+      $('#modalTitulo').text(p.nombre); 
+      $('#modalPrecio').text('$' + p.precio); 
+      $('#modalDesc').text(p.desc || 'Sin descripción.');
+      
+      // GENERAR BOTONES DE OPCIONES
+      let htmlOpts = '';
+      if(p.colores && p.colores.length > 1) {
+          let opciones = p.colores.split(',');
+          opciones.forEach(opt => {
+              htmlOpts += `<button class="option-btn" onclick="seleccionarOpcion(this, '${opt.trim()}')">${opt.trim()}</button>`;
+          });
+          $('#modalOptionsContainer').html(htmlOpts).show();
+      } else {
+          // Si no hay opciones, ocultar contenedor
+          $('#modalOptionsContainer').html('<small class="text-muted">Unitalla / Único</small>');
+      }
+      
+      $('#modalProducto').modal('show');
+  }
+
+  function seleccionarOpcion(btn, texto) {
+      $('.option-btn').removeClass('selected');
+      $(btn).addClass('selected');
+      opcionSeleccionada = texto;
+      $('#selectionError').hide();
+  }
+
+  function enviarWhatsApp() {
+      // Validar si hay opciones y no se eligió ninguna
+      let hayOpciones = $('#modalOptionsContainer button').length > 0;
+      
+      if (hayOpciones && opcionSeleccionada === "") {
+          $('#selectionError').show();
+          return;
+      }
+
+      let nombre = $('#modalTitulo').text();
+      let folio = $('#modalID').text();
+      let precio = $('#modalPrecio').text();
+      let detalle = hayOpciones ? `\n🔹 *Opción:* ${opcionSeleccionada}` : "";
+      
+      let tel = "5218122133496"; 
+      let mensaje = `Hola, me interesa este producto:${detalle}\n\n📦 *Producto:* ${nombre}\n🔖 *${folio}*\n💰 *Precio:* ${precio}\n\n¿Está disponible?`;
+      
+      let url = `https://wa.me/${tel}?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
+  }
+
+  function filtrar(c) { c==='Todo'?$('.item-producto').fadeIn():($('.item-producto').hide(),$('.item-producto[data-cat="'+c+'"]').fadeIn()); }
+  function toggleCantidad() { $('#checkUnico').is(':checked')?$('#inputCantidad').val('1').prop('disabled',true):$('#inputCantidad').prop('disabled',false); }
+  function abrirLogin() { $('#modalLogin').modal('show'); }
+  function salirAdmin() { $('#admin-panel').fadeOut(); $('#client-view').fadeIn(); }
+  function login() { fetch(API_URL + "?action=login&pass=" + $('#inputPass').val()).then(r=>r.json()).then(d=>{ if(d.authorized) { $('#modalLogin').modal('hide'); $('#client-view').hide(); $('#admin-panel').fadeIn(); $('#inputPass').val(''); } else { alert("Contraseña incorrecta"); } }); }
+  function filtrarTabla() { let v = $('#buscadorInv').val().toLowerCase(); $("#tablaInventario tbody tr").filter(function() { $(this).toggle($(this).text().toLowerCase().indexOf(v) > -1) }); }
 </script>
 
 </body>
 </html>
+
