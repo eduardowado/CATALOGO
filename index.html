@@ -4,16 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Mi Boutique</title>
+  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
   <style>
     body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; padding-bottom: 80px; -webkit-tap-highlight-color: transparent; }
     .navbar { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
     .navbar-brand { font-weight: 600; color: #333; letter-spacing: 0.5px; font-size: 1.1rem; }
     .btn-admin-header { cursor: pointer; color: #555; font-size: 0.9rem; font-weight: 500; padding: 5px 12px; border-radius: 20px; background: #f1f1f1; transition: 0.2s; }
-    .btn-admin-header:hover { background: #e2e2e2; color: #000; }
-    .product-card { border: none; border-radius: 15px; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
+    .btn-admin-header:hover { background-color: #e2e2e2; color: #000; }
+    .product-card { border: none; border-radius: 15px; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; position: relative; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
     .product-card:active { transform: scale(0.98); }
     .card-img-top { height: 180px; object-fit: cover; width: 100%; background-color: #eee; }
     .card-body { padding: 12px 15px; }
@@ -65,7 +67,7 @@
         <button class="btn btn-sm btn-outline-light rounded-pill px-3" onclick="salirAdmin()">Salir</button>
     </div>
     <div class="container mt-3">
-        <ul class="nav nav-pills nav-fill mb-4 bg-light p-1 rounded" id="pills-tab">
+        <ul class="nav nav-pills nav-fill mb-4 bg-light p-1 rounded" id="pills-tab" style="font-size:0.8rem;">
             <li class="nav-item"><button class="nav-link active rounded" data-bs-toggle="pill" data-bs-target="#pills-alta" onclick="limpiarFormulario()">Nuevo</button></li>
             <li class="nav-item"><button class="nav-link rounded" data-bs-toggle="pill" data-bs-target="#pills-inv" onclick="cargarInventarioTabla()">Stock</button></li>
             <li class="nav-item"><button class="nav-link rounded" data-bs-toggle="pill" data-bs-target="#pills-apart" onclick="cargarApartados()">Apartados</button></li>
@@ -75,17 +77,20 @@
             <div class="tab-pane fade show active" id="pills-alta">
                 <form id="formProducto" onsubmit="event.preventDefault(); procesarEnvio();">
                     <input type="hidden" id="inputId"><input type="hidden" id="inputFotoUrl">
+                    
                     <div class="card border-0 shadow-sm mb-3 p-3">
                         <label class="fw-bold mb-2 text-primary">1. Foto</label>
                         <div class="d-grid gap-2"><label class="btn btn-outline-secondary btn-sm text-start"><i class="fa-regular fa-image me-2"></i> Galería<input type="file" id="inputFotoArchivo" accept="image/*" hidden></label></div>
                         <div class="text-center mt-2 position-relative" id="previewContainer" style="display:none;"><img id="previewImg" src="" class="img-fluid rounded border" style="max-height: 200px;"><button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle" onclick="limpiarFoto()" style="width:30px;height:30px;padding:0;">×</button></div>
                     </div>
+
                     <div class="card border-0 shadow-sm mb-3 p-3">
-                        <label class="fw-bold mb-2 text-primary">2. Datos</label>
+                        <label class="fw-bold mb-2 text-primary">2. Detalles</label>
                         <div class="form-floating mb-2"><input type="text" class="form-control" id="inputNombre" placeholder="Nombre" required><label>Nombre</label></div>
                         <div class="form-floating mb-3"><textarea class="form-control" id="inputDesc" placeholder="Desc" style="height:80px"></textarea><label>Descripción</label></div>
                         <div class="row g-2"><div class="col-4"><div class="form-floating"><input type="number" class="form-control" id="inputCantidad" value="1" placeholder="Cant"><label>Cant.</label></div></div><div class="col-8"><div class="form-floating"><input type="text" class="form-control" id="inputColores" placeholder="Colores"><label>Variantes</label></div></div></div>
                     </div>
+
                     <div class="card border-0 shadow-sm mb-3 p-3">
                          <label class="fw-bold mb-2 text-primary">3. Venta</label>
                          <div class="row g-2 mb-3">
@@ -95,19 +100,27 @@
                          <div class="d-flex justify-content-between bg-light p-2 rounded mb-2"><label class="form-check-label" for="checkUnico">¿Pieza Única?</label><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="checkUnico" onchange="toggleCantidad()"></div></div>
                          <div class="d-flex justify-content-between bg-light p-2 rounded"><label class="form-check-label text-danger fw-bold">¡Es Oferta!</label><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="checkOferta"></div></div>
                     </div>
-                    <div class="text-center mb-3"><button type="button" class="btn btn-link text-decoration-none btn-sm text-muted" onclick="$('#detallesExtra').slideToggle()">+ Costo y Ubicación</button></div>
-                    <div id="detallesExtra" style="display:none;" class="mb-4 card p-3 border-0 shadow-sm bg-light"><div class="row g-2"><div class="col-6"><input type="number" class="form-control form-control-sm" id="inputCosto" placeholder="Costo Compra"></div><div class="col-6"><input type="text" class="form-control form-control-sm" id="inputUbicacion" placeholder="Ubicación"></div></div></div>
+
+                    <div class="card border-0 shadow-sm mb-4 p-3">
+                        <label class="fw-bold mb-2 text-primary">4. Datos Internos (Opcional)</label>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6"><div class="form-floating"><input type="number" class="form-control" id="inputCosto" placeholder="Costo"><label>Costo ($)</label></div></div>
+                            <div class="col-6"><div class="form-floating"><input type="text" class="form-control" id="inputUbicacion" placeholder="Ubicación"><label>Ubicación</label></div></div>
+                        </div>
+                        <div class="form-check ms-1"><input class="form-check-input" type="checkbox" id="checkInicial"><label class="form-check-label small text-muted" for="checkInicial">Inventario Inicial (No registrar gasto)</label></div>
+                    </div>
+                    
                     <button type="submit" class="btn btn-dark w-100 py-3 rounded-pill shadow fw-bold mb-5" id="btnGuardar">GUARDAR PRODUCTO</button>
                 </form>
             </div>
 
             <div class="tab-pane fade" id="pills-inv">
                 <div class="input-group mb-3 shadow-sm"><span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-search text-muted"></i></span><input type="text" class="form-control border-start-0" placeholder="Buscar..." id="buscadorInv" onkeyup="filtrarTabla()"></div>
-                <div class="card border-0 shadow-sm overflow-hidden"><div class="table-responsive"><table class="table table-hover mb-0 small align-middle" id="tablaInventario"><thead class="table-light"><tr><th>Producto</th><th class="text-center">Stock</th><th class="text-end" style="min-width:120px;">Acciones</th></tr></thead><tbody></tbody></table></div></div>
+                <div class="card border-0 shadow-sm overflow-hidden"><div class="table-responsive"><table class="table table-hover mb-0 small align-middle" id="tablaInventario"><thead class="table-light"><tr><th>Producto</th><th>Ubi.</th><th class="text-center">Stock</th><th class="text-end" style="min-width:120px;">Acciones</th></tr></thead><tbody></tbody></table></div></div>
             </div>
 
             <div class="tab-pane fade" id="pills-apart">
-                <div class="card border-0 shadow-sm overflow-hidden"><div class="table-responsive"><table class="table table-hover mb-0 small align-middle" id="tablaApartados"><thead class="table-light"><tr><th>Detalle</th><th class="text-end" style="min-width: 100px;">Acción</th></tr></thead><tbody></tbody></table></div></div>
+                <div class="card border-0 shadow-sm overflow-hidden"><div class="table-responsive"><table class="table table-hover mb-0 small align-middle" id="tablaApartados"><thead class="table-light"><tr><th>Detalle</th><th class="text-end">Acción</th></tr></thead><tbody></tbody></table></div></div>
                 <div id="emptyApartados" class="text-center mt-5 text-muted" style="display:none;"><i class="fa-solid fa-box-open fa-3x mb-3 opacity-25"></i><p>No hay apartados.</p></div>
             </div>
         </div>
@@ -123,14 +136,13 @@
 
 <script>
   // ⚠️ PEGA AQUÍ TU NUEVA URL DE APPS SCRIPT
-  const API_URL = "https://script.google.com/macros/s/AKfycbwpzY6jJjGGo-frw1cgb0DSWfuOuAupWAfDxCZ-LX4xu8saV4LXDhOeEUj48b1QWgpZcA/exec"; 
+  const API_URL = "https://script.google.com/macros/s/AKfycbyc-XpBReRRaWYH9cQTSiiDfy-TihbI5vWiXaQK4C52YhW3QJ8NvI1-sgvq3snrQvk_Gg/exec"; 
 
   let catalogoCache = [];
   let opcionSeleccionada = "";
 
   $(document).ready(function(){ fetchCatalog(); });
 
-  // --- FOTO Y GUARDADO ---
   const inputFoto = document.getElementById('inputFotoArchivo');
   inputFoto.addEventListener('change', function() { if (this.files && this.files[0]) { const reader = new FileReader(); reader.onload = function(e) { $('#previewImg').attr('src', e.target.result); $('#previewContainer').fadeIn(); }; reader.readAsDataURL(this.files[0]); } });
   function limpiarFoto() { inputFoto.value = ''; $('#previewContainer').hide(); $('#previewImg').attr('src', ''); $('#inputFotoUrl').val(''); }
@@ -171,6 +183,7 @@
           ubicacion: $('#inputUbicacion').val(),
           esUnico: $('#checkUnico').is(':checked').toString(),
           esOferta: $('#checkOferta').is(':checked').toString(),
+          esInicial: $('#checkInicial').is(':checked').toString(), 
           imagen: imgData
       };
       fetch(API_URL, { method: "POST", body: JSON.stringify(payload) }).then(r => r.json()).then(data => {
@@ -184,22 +197,31 @@
       const p = catalogoCache.find(item => item.id === id);
       if(!p) { alert("Producto no activo."); return; }
       $('#inputId').val(p.id); $('#inputNombre').val(p.nombre); $('#inputDesc').val(p.desc); $('#inputPrecio').val(p.precio); $('#inputCantidad').val(p.stock); $('#inputColores').val(p.colores); $('#inputCategoria').val(p.cat); $('#inputFotoUrl').val(p.img);
+      // En edición, no se necesita inventario inicial
+      $('#checkInicial').prop('checked', false).parent().hide();
+      
       if(p.img){ $('#previewImg').attr('src', p.img); $('#previewContainer').show(); }
       if(p.oferta) $('#checkOferta').prop('checked', true);
       if(p.unico) { $('#checkUnico').prop('checked', true); toggleCantidad(); }
       const triggerEl = document.querySelector('#pills-tab button[data-bs-target="#pills-alta"]'); bootstrap.Tab.getInstance(triggerEl).show();
       $('#btnGuardar').text("ACTUALIZAR PRODUCTO");
   }
-  function limpiarFormulario(){ document.getElementById('formProducto').reset(); limpiarFoto(); $('#inputId').val(''); $('#inputFotoUrl').val(''); $('#btnGuardar').text("GUARDAR PRODUCTO"); $('#inputCantidad').prop('disabled', false); }
+  function limpiarFormulario(){ 
+      document.getElementById('formProducto').reset(); 
+      limpiarFoto(); $('#inputId').val(''); $('#inputFotoUrl').val(''); 
+      $('#btnGuardar').text("GUARDAR PRODUCTO"); 
+      $('#inputCantidad').prop('disabled', false);
+      $('#checkInicial').parent().show(); 
+  }
 
-  // --- INVENTARIO ---
   function cargarInventarioTabla() {
-      $('#tablaInventario tbody').html('<tr><td colspan="3" class="text-center py-3">Cargando...</td></tr>');
+      $('#tablaInventario tbody').html('<tr><td colspan="4" class="text-center py-3">Cargando...</td></tr>');
       fetch(API_URL + "?action=getInventory").then(r=>r.json()).then(data => {
           if(Array.isArray(data)){
               let html = '';
               data.forEach(item => {
                   let color = item.estado==='Activo'?'text-success':'text-danger';
+                  let ubi = item.ubicacion || '<span class="text-muted">-</span>';
                   let botones = '';
                   if(item.estado === 'Agotado') {
                       botones = `<div class="text-end"><button class="btn btn-primary btn-action text-white shadow-sm" onclick="resurtir('${item.id}')" title="Resurtir"><i class="fa-solid fa-plus"></i></button></div>`;
@@ -208,14 +230,13 @@
                   } else {
                       botones = `<div class="text-end"><button class="btn btn-success btn-action text-white shadow-sm" onclick="cambiarEstado('${item.id}', 'VENTA')" title="Vender"><i class="fa-solid fa-dollar-sign"></i></button><button class="btn btn-warning btn-action text-white shadow-sm" onclick="cambiarEstado('${item.id}', 'APARTAR')" title="Apartar"><i class="fa-solid fa-box-archive"></i></button><button class="btn btn-info btn-action text-white shadow-sm" onclick="cargarProductoParaEditar('${item.id}')" title="Editar"><i class="fa-solid fa-pen"></i></button></div>`;
                   }
-                  html += `<tr><td><span class="fw-bold d-block text-dark">${item.nombre}</span><span class="text-muted small">${item.id} - <span class="${color}">${item.estado}</span></span></td><td class="text-center fw-bold">${item.stock}</td><td>${botones}</td></tr>`;
+                  html += `<tr><td><span class="fw-bold d-block text-dark">${item.nombre}</span><span class="text-muted small">${item.id} - <span class="${color}">${item.estado}</span></span></td><td class="small text-secondary">${ubi}</td><td class="text-center fw-bold">${item.stock}</td><td>${botones}</td></tr>`;
               });
               $('#tablaInventario tbody').html(html);
           }
       });
   }
 
-  // --- APARTADOS (CON BOTONES VENDER Y LIBERAR) ---
   function cargarApartados() {
       $('#tablaApartados tbody').html('<tr><td colspan="2" class="text-center py-3">Cargando...</td></tr>');
       fetch(API_URL + "?action=getApartados").then(r=>r.json()).then(data => {
@@ -223,45 +244,31 @@
               $('#emptyApartados').hide();
               let html = '';
               data.forEach(item => {
-                  html += `
-                    <tr>
-                        <td>
-                            <span class="fw-bold d-block text-dark">${item.nombre}</span>
-                            <span class="text-muted small">Cliente: ${item.cliente} (${item.cantidad}pz)</span>
-                        </td>
-                        <td class="text-end">
-                            <button class="btn btn-success btn-action text-white shadow-sm" onclick="cambiarEstado('${item.idApartado}', 'VENDER_APARTADO')" title="Concretar Venta"><i class="fa-solid fa-check"></i></button>
-                            <button class="btn btn-danger btn-action text-white shadow-sm" onclick="cambiarEstado('${item.idApartado}', 'LIBERAR')" title="Cancelar/Liberar"><i class="fa-solid fa-times"></i></button>
-                        </td>
-                    </tr>`;
+                  html += `<tr><td><span class="fw-bold d-block text-dark">${item.nombre}</span><span class="text-muted small">Cliente: ${item.cliente} (${item.cantidad}pz)</span></td><td class="text-end"><button class="btn btn-success btn-action text-white shadow-sm" onclick="cambiarEstado('${item.idApartado}', 'VENDER_APARTADO')" title="Vender"><i class="fa-solid fa-check"></i></button><button class="btn btn-danger btn-action text-white shadow-sm" onclick="cambiarEstado('${item.idApartado}', 'LIBERAR')" title="Liberar"><i class="fa-solid fa-times"></i></button></td></tr>`;
               });
               $('#tablaApartados tbody').html(html);
           } else { $('#tablaApartados tbody').html(''); $('#emptyApartados').show(); }
       });
   }
 
-  // --- ACCIONES ---
   function cambiarEstado(id, tipo) {
       let cantidad = 0; let cliente = "";
       if (tipo === "VENTA") { if(!confirm("¿Registrar venta de 1 pieza?")) return; }
       else if (tipo === "APARTAR") { cantidad = prompt("¿Cuántas piezas?", "1"); if(!cantidad) return; cliente = prompt("Nombre cliente:"); if(!cliente) return; }
-      else if (tipo === "LIBERAR") { if(!confirm("¿Cancelar apartado y regresar stock?")) return; }
-      else if (tipo === "VENDER_APARTADO") { if(!confirm("¿Confirmar que el cliente pagó y se llevó el producto?")) return; }
+      else if (tipo === "LIBERAR") { if(!confirm("¿Liberar apartado?")) return; }
+      else if (tipo === "VENDER_APARTADO") { if(!confirm("¿Concretar venta?")) return; }
       ejecutarMovimiento(id, tipo, cantidad, cliente);
   }
   function resurtir(id) { let cant = prompt("¿Cuántas piezas llegaron?"); if(cant && parseInt(cant) > 0) ejecutarMovimiento(id, "RESURTIR", cant, ""); }
   function ejecutarMovimiento(id, tipo, cantidad = 0, cliente = "") {
       $('#upload-loader').css('display', 'flex'); $('#loader-msg').text('Actualizando...');
-      // Si es liberar o vender apartado, el ID que enviamos es el ID del Apartado
       const payload = { action: "updateStatus", id: id, tipo: tipo, cantidad: cantidad, cliente: cliente };
       if(tipo === "LIBERAR" || tipo === "VENDER_APARTADO") payload.idApartado = id;
-      
       fetch(API_URL, { method: "POST", body: JSON.stringify(payload) }).then(r => r.json()).then(data => {
           $('#upload-loader').fadeOut(); alert(data.message); cargarInventarioTabla(); cargarApartados(); fetchCatalog();
       });
   }
 
-  // --- CATALOGO Y UTILIDADES ---
   function fetchCatalog() { fetch(API_URL + "?action=getCatalog").then(r=>r.json()).then(data => { if (Array.isArray(data)) { catalogoCache = data; renderProducts(data); } $('#loader').fadeOut(); }); }
   function renderProducts(productos) {
       let hN='', hO='', hA='';
@@ -303,5 +310,6 @@
 
 </body>
 </html>
+
 
 
